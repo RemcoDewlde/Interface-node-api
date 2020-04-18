@@ -1,0 +1,12 @@
+# node settings:
+PORT=3000
+NODE_ENV=dev
+
+# MongoDB settings:
+DATABASE_IP=
+DATABASE_PORT=
+DATABASE_NAME=
+
+# JWT settings:
+TOKEN_SECRET=
+
