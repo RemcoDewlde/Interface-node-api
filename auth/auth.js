@@ -14,13 +14,28 @@ const UserModel = require('../models/User');
 const signUpSchema = require('../schema/auth').signUpSchema;
 const loginSchema = require('../schema/auth').loginSchema;
 
-// mongodb connection logging
-// TODO: remove the mongo logging
-mongo.on('error', console.error.bind(console, 'connection error:'));
-mongo.once('open', function () {
-    // TODO: log this in logging file
-    console.log("[MongoDB]: connection made");
-});
+
+function createTokenSendResponse(user, res, next) {
+    const payload = {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        active: user.active
+    };
+
+    jwt.sign(payload, process.env.TOKEN_SECRET, {
+        expiresIn: '1d'
+    }, (err, token) => {
+        if (err) {
+            respondError422(res, next);
+        } else {
+            res.json({
+                token
+            });
+        }
+    });
+}
 
 router.post('/signup', (req, res, next) => {
     const result = Joi.validate(req.body, signUpSchema);
@@ -38,13 +53,22 @@ router.post('/signup', (req, res, next) => {
                         username: req.body.username,
                         password: hashed,
                         email: req.body.email,
-                        role: 'user'
+                        role: 'user',
+                        active: false
                     });
 
                     // save user to the database
                     model.save().then(data => {
                         //TODO: add user redirect on front-end, or sign the jwt token and redirect
-                        res.json({"username": model.username})
+                        const redirectUser = {
+                            _id: data._id,
+                            username: data.username,
+                            email: data.email,
+                            role: data.role,
+                            active: false
+                        };
+                        createTokenSendResponse(redirectUser, res, next);
+
                     });
 
                 })
@@ -64,32 +88,17 @@ router.post('/login', (req, res, next) => {
             username: req.body.username,
         }).then(user => {
             if (user) {
-                // found user in the DB
-                // compare password
-                bcrypt.compare(req.body.password, user.password).then((result) => {
-                    if (result) {
-                        // password is correct
-                        const payload = {
-                            _id: user._id,
-                            username : user.username,
-                            role : user.role
-                        };
-
-                        jwt.sign(payload, process.env.TOKEN_SECRET, {
-                            // jwt signing settings
-                            expiresIn: '1d'
-                        }, (err, token) => {
-                            if (err) respondError422(res, next);
-                            else {
-                                res.json({token});
-                            }
-                        })
-                    } else {
-                        respondError422(res, next)
-                    }
-                })
+                bcrypt
+                    .compare(req.body.password, user.password)
+                    .then((result) => {
+                        if (result) {
+                            createTokenSendResponse(user, res, next);
+                        } else {
+                            respondError422(res, next);
+                        }
+                    });
             } else {
-                respondError422(res, next)
+                respondError422(res, next);
             }
         })
     } else {
