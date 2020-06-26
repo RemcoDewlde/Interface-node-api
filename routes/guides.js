@@ -5,9 +5,9 @@ let Guide = require('../models/Guide');
 
 
 router.get('/', (req, res) => {
-    Guide.find().exec().then((data) => {
+    Guide.find().exec().then((guides) => {
         try {
-            res.json(data);
+            res.json(guides);
         } catch (e) {
             throw e
         }
@@ -32,7 +32,6 @@ router.post('', function (req, res, next) {
 });
 
 router.post('/search', function (req, res, next) {
-
     const query = {
         $or: [{guideName: {$regex: req.body.search, $options: 'i'}}, {
             tags: {
