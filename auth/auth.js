@@ -13,6 +13,7 @@ const UserModel = require('../models/User');
 // Joi validation schema's
 const signUpSchema = require('../schema/auth').signUpSchema;
 const loginSchema = require('../schema/auth').loginSchema;
+const resetSchema = require('../schema/auth').resetPasswordSchema;
 
 
 function createTokenSendResponse(user, res, next) {
@@ -106,10 +107,58 @@ router.post('/login', (req, res, next) => {
     }
 });
 
+
+router.post('/reset', (req, res, next) => {
+    // Add better error messages / responses
+    const result = Joi.validate(req.body, resetSchema);
+    if (result.error === null) {
+        UserModel.findById({_id: req.body.userID}).exec().then((user) => {
+            if (user) {
+                bcrypt
+                    .compare(req.body.old_password, user.password)
+                    .then((result) => {
+                        if (result) {
+                            // password match
+                            bcrypt.hash(req.body.new_password, 12).then(hashed => {
+                                user.password = hashed;
+                                user.save((err, result) => {
+                                    if (err === null){
+                                        res.json({changed: 'ok'})
+                                    } else {
+                                        const error = new Error("Could not change passwords");
+                                        next(error);
+                                    }
+                                });
+                            });
+
+                        } else {
+                            const error = new Error("Incorrect password supplied");
+                            next(error)
+                        }
+                    });
+            } else {
+                res.status(422);
+                const error = new Error("No user found");
+                next(error);
+            }
+        })
+    } else {
+        res.status(422);
+        const error = new Error(result.error);
+        next(error);
+    }
+});
+
 function respondError422(res, next) {
     res.status(422);
     const error = new Error('Unable to login.');
     next(error);
+}
+
+function PasswordsDoNotMatch(res, next) {
+    res.status(401);
+    const error = new Error('Passwords do not match');
+    next(error)
 }
 
 module.exports = router;

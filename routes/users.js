@@ -5,7 +5,7 @@ let User = require('../models/User.js');
 
 
 router.get('/:id', function (req, res) {
-    User.findById(req.params.id, '_id username role', function (err, data) {
+    User.findById(req.params.id, function (err, data) {
         delete data['password'];
         res.json(data);
     })
@@ -22,14 +22,25 @@ router.get('', function (req, res) {
     })
 });
 
+router.patch('', function (req, res) {
+    const query = {_id: req.body._id};
+    User.findOneAndUpdate(query, req.body, function (err, result) {
+        if (err) {
+            res.json({error: err})
+        } else {
+            res.json({found: result})
+        }
+    })
+});
+
 
 router.post('/search', function (req, res) {
     const query = {
-            $or: [
-                {username: {$regex: req.body.search, $options: 'i'}},
-                {email: {$regex: req.body.search, $options: 'i'}}
-            ]
-        };
+        $or: [
+            {username: {$regex: req.body.search, $options: 'i'}},
+            {email: {$regex: req.body.search, $options: 'i'}}
+        ]
+    };
 
     User.find(query).exec().then((users) => {
         users.toJSON;

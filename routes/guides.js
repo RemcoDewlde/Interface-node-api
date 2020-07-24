@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
     })
 });
 
-router.post('', function (req, res, next) {
+router.post('', function (req, res) {
     const guide = new Guide({
         guideName: req.body.form.guideName,
         guideDesc: req.body.form.description,
@@ -31,7 +31,7 @@ router.post('', function (req, res, next) {
 
 });
 
-router.post('/search', function (req, res, next) {
+router.post('/search', function (req, res) {
     const query = {
         $or: [{guideName: {$regex: req.body.search, $options: 'i'}}, {
             tags: {
@@ -50,7 +50,7 @@ router.post('/search', function (req, res, next) {
     })
 });
 
-router.get('/:id', function (req, res, next) {
+router.get('/:id', function (req, res) {
     Guide.findById(req.params.id, function (err, result) {
         if (err) {
             res.json({error: err})
@@ -60,7 +60,7 @@ router.get('/:id', function (req, res, next) {
     })
 });
 
-router.patch('', function (req, res, next) {
+router.patch('', function (req, res) {
     const query = {_id: req.body._id};
     Guide.findOneAndUpdate(query, req.body, function (err, result) {
         if (err) {
@@ -71,7 +71,7 @@ router.patch('', function (req, res, next) {
     })
 });
 
-router.delete('/:id', function (req, res, next) {
+router.delete('/:id', function (req, res) {
     Guide.findByIdAndDelete({_id: req.params.id}, function (err, result) {
         if (err) throw err;
         if (result) {

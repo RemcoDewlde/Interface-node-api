@@ -5,7 +5,7 @@ connect(`mongodb://${process.env.DATABASE_IP}/${process.env.DATABASE_NAME}`, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
-    useFindAndModify: true,
+    useFindAndModify: false,
 });
 
 module.exports = connection;
