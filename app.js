@@ -14,7 +14,7 @@ const templates = require("./routes/templates");
 const pricecards = require("./routes/pricecards");
 const users = require("./routes/users");
 const feature = require("./routes/feature");
-
+const bug = require("./routes/bug");
 
 let app = express();
 
@@ -46,6 +46,7 @@ app.use('/api/v1/templates', authMiddleware.isLoggedIn, templates);
 app.use('/api/v1/pricecards', authMiddleware.isLoggedIn, pricecards);
 app.use('/api/v1/users', authMiddleware.isLoggedIn, users);
 app.use('/api/v1/feature', authMiddleware.isLoggedIn, feature);
+app.use('/api/v1/bug', authMiddleware.isLoggedIn, bug);
 
 
 // error middleware

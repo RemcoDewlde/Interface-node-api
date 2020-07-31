@@ -30,7 +30,6 @@ router.get('/:id', function (req, res) {
     })
 });
 
-
 router.delete('/:id', function (req, res) {
     Feature.findByIdAndDelete({_id: req.params.id}, function (err, result) {
         if (err) throw err;
