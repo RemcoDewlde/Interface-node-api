@@ -4,25 +4,19 @@ const router = express.Router();
 let User = require('../models/User.js');
 
 
-router.get('/:id', function (req, res) {
-    User.findById(req.params.id, function (err, data) {
-        delete data['password'];
-        res.json(data);
-    })
+router.get('/:id',(req, res) => {
+    User.findById({_id: req.params.id})
+        .then((users) => res.status(200).json(users))
+        .catch((err) => res.status(400).json("Request Failed"));
 });
 
-router.get('', function (req, res) {
-    User.find().exec().then((users) => {
-        users.toJSON;
-        try {
-            res.json(users);
-        } catch (e) {
-            throw e
-        }
-    })
+router.get('',  (req, res) => {
+    User.find()
+        .then((users) => res.status(200).json(users))
+        .catch((err) => res.status(400).json("Request Failed"));
 });
 
-router.patch('', function (req, res) {
+router.patch('',  (req, res) => {
     const query = {_id: req.body._id};
     User.findOneAndUpdate(query, req.body, function (err, result) {
         if (err) {
@@ -33,7 +27,7 @@ router.patch('', function (req, res) {
     })
 });
 
-router.post('/search', function (req, res) {
+router.post('/search', (req, res) => {
     const query = {
         // the query searches for username or email address
         $or: [{username: {$regex: req.body.search, $options: 'i'}}, {email: {$regex: req.body.search, $options: 'i'}}]
