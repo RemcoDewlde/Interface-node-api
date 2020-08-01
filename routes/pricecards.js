@@ -3,13 +3,13 @@ const router = express.Router();
 
 let PriceCard = require('../models/Pricecard');
 
-router.get('', function (req, res) {
+router.get('', (req, res) => {
     PriceCard.find()
         .then((data) => res.status(200).json(data))
         .catch((err) => res.status(400).json(err))
 });
 
-router.post('', function (req, res) {
+router.post('',  (req, res) => {
     const {Name, ProductPrice, status, marge, sale, salePrice, SellingPoints} = req.body;
     const priceCard = new PriceCard({
         Name,
@@ -41,7 +41,7 @@ router.delete('/:id', (req, res) => {
         });
 });
 
-router.post('/search', function (req, res) {
+router.post('/search', (req, res) => {
     PriceCard.find({Name: {$regex: req.body.search, $options: 'i'}})
         .then((data) => {
             res.status(200).json({found: data})

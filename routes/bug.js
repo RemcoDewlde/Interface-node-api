@@ -3,17 +3,13 @@ const router = express.Router();
 
 let Bug = require('../models/Bug.js');
 
-router.get('', function (req, res) {
-    Bug.find().exec().then((feature) => {
-        try {
-            res.json(feature);
-        } catch (e) {
-            throw e
-        }
-    })
+router.get('', (req, res) => {
+    Bug.find()
+        .then((data) => res.status(200).json(data))
+        .catch((err) => res.status(400).json("Request Failed"));
 });
 
-router.post('', function (req, res) {
+router.post('', (req, res) => {
     let bug = new Bug({
         user_id: req.body.user,
         what: req.body.what,
@@ -22,27 +18,27 @@ router.post('', function (req, res) {
         notes: req.body.notes,
         severity: req.body.severity
     });
-    bug.save();
-    res.json({ok: true, message: "Bug saved successfully"})
+
+    bug.save()
+        .then((data) => res.status(200).json({ok: true, message: "Bug saved successfully"}))
+        .catch((err) => res.status(400).json("Request Failed"));
 });
 
-router.get('/:id', function (req, res) {
+router.get('/:id', (req, res) => {
     Bug.findById(req.params.id, function (err, data) {
         res.json(data);
     })
 });
 
 
-router.delete('/:id', function (req, res) {
-    Bug.findByIdAndDelete({_id: req.params.id}, function (err, result) {
-        if (err) {
-            res.json({success: false, message: err});
-            throw err
-        }
-        if (result) {
-            res.json({success: true, message: "Deleted successfully"})
-        }
-    })
+router.delete('/:id', (req, res) => {
+    Bug.deleteOne({_id: req.params.id})
+        .then((data) => {
+            res.status(200).json({success: true, message: "Deleted successfully"})
+        })
+        .catch((err) => {
+            res.status(400).json({success: false, message: err})
+        });
 });
 
 module.exports = router;

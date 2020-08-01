@@ -3,13 +3,13 @@ const router = express.Router();
 
 let Template = require('../models/template');
 
-router.get('', function (req, res) {
+router.get('', (req, res) => {
     Template.find()
         .then((data) => res.status(200).json(data))
         .catch((err) => res.status(400).json(err))
 });
 
-router.post('', function (req, res) {
+router.post('', (req, res) => {
     const {Name, ProductPrice, status, marge, sale, salePrice, SellingPoints} = req.body;
     const template = new Template({
         Name,
@@ -21,8 +21,8 @@ router.post('', function (req, res) {
         SellingPoints
     });
     template.save()
-        .then((data) => res.status(200).json({ok: true, message: "Template saved successfully"})
-            .catch((err) => res.status(400).json("Request Failed")));
+        .then((data) => res.status(200).json({ok: true, message: "Template saved successfully"}))
+        .catch((err) => res.status(400).json("Request Failed"));
 });
 
 router.get('/:id', (req, res) => {
@@ -41,7 +41,7 @@ router.delete('/:id', (req, res) => {
         });
 });
 
-router.post('/search', function (req, res) {
+router.post('/search', (req, res) => {
     Template.find({Name: {$regex: req.body.search, $options: 'i'}})
         .then((data) => {
             res.status(200).json({found: data})
