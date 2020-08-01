@@ -25,11 +25,10 @@ router.post('', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
-    Bug.findById(req.params.id, function (err, data) {
-        res.json(data);
-    })
+    Bug.findById(req.params.id)
+        .then((data) => res.status(200).json(data))
+        .catch((err) => res.status(400).json(err))
 });
-
 
 router.delete('/:id', (req, res) => {
     Bug.deleteOne({_id: req.params.id})

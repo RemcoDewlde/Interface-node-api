@@ -33,25 +33,16 @@ router.patch('', function (req, res) {
     })
 });
 
-
 router.post('/search', function (req, res) {
     const query = {
-        $or: [
-            {username: {$regex: req.body.search, $options: 'i'}},
-            {email: {$regex: req.body.search, $options: 'i'}}
-        ]
+        // the query searches for username or email address
+        $or: [{username: {$regex: req.body.search, $options: 'i'}}, {email: {$regex: req.body.search, $options: 'i'}}]
     };
 
-    User.find(query).exec().then((users) => {
-        users.toJSON;
-        try {
-            res.json(users);
-        } catch (e) {
-            throw e
-        }
-    })
+    User.find(query)
+        .then((users) => res.status(200).json(users))
+        .catch((err) => res.status(400).json("Request Failed"));
 });
-
 
 module.exports = router;
 
