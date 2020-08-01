@@ -10,8 +10,8 @@ router.get('', function (req, res) {
 });
 
 router.post('', function (req, res) {
-    const { Name, ProductPrice, status, marge, sale, salePrice, SellingPoints } = req.body;
-    let priceCard = new PriceCard({
+    const {Name, ProductPrice, status, marge, sale, salePrice, SellingPoints} = req.body;
+    const priceCard = new PriceCard({
         Name,
         ProductPrice,
         status,
@@ -31,16 +31,24 @@ router.get('/:id', (req, res) => {
         .catch((err) => res.status(400).json(err))
 });
 
-router.delete('/:id',(req, res) => {
+router.delete('/:id', (req, res) => {
     PriceCard.deleteOne({_id: req.params.id})
-        .then((data) => {res.status(200).json({success: true, message: "Deleted successfully", payload: {data}})})
-        .catch((err) => {res.status(400).json("Request Failed")});
+        .then((data) => {
+            res.status(200).json({success: true, message: "Deleted successfully", payload: {data}})
+        })
+        .catch((err) => {
+            res.status(400).json("Request Failed")
+        });
 });
 
 router.post('/search', function (req, res) {
-    PriceCard.find({Name: { $regex: req.body.search, $options: 'i'}})
-        .then((data) => {res.status(200).json({found: data})})
-        .catch((err) => {res.status(400).json("Request Failed")})
+    PriceCard.find({Name: {$regex: req.body.search, $options: 'i'}})
+        .then((data) => {
+            res.status(200).json({found: data})
+        })
+        .catch((err) => {
+            res.status(400).json("Request Failed")
+        })
 });
 
 module.exports = router;

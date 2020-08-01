@@ -4,39 +4,39 @@ const router = express.Router();
 let Feature = require('../models/FeatureRequest.js');
 
 router.get('', function (req, res) {
-    Feature.find().exec().then((feature) => {
-        try {
-            res.json(feature);
-        } catch (e) {
-            throw e
-        }
-    })
+    Feature.find()
+        .then((data) => res.status(200).json(data))
+        .catch((err) => res.status(400).json(err))
 });
 
 router.post('', function (req, res) {
+
+    const {user_id, text, title, location} = req.body;
     let template = new Feature({
-        user_id: req.body.user_id,
-        text: req.body.text,
-        title: req.body.title,
-        location: req.body.location
+        user_id,
+        text,
+        title,
+        location
     });
-    template.save();
-    res.json({ok: true, message: "Feature saved successfully"})
+    template.save()
+        .then(() => res.status(200).json({ok: true, message: "Feature Request saved successfully"}))
+        .catch((err) => res.status(400).json(err))
 });
 
 router.get('/:id', function (req, res) {
-    Feature.findById(req.params.id, function (err, data) {
-        res.json(data);
-    })
+    Feature.findById(req.params.id)
+        .then((data) => res.status(200).json(data))
+        .catch((err) => res.status(400).json(err))
 });
 
 router.delete('/:id', function (req, res) {
-    Feature.findByIdAndDelete({_id: req.params.id}, function (err, result) {
-        if (err) throw err;
-        if (result) {
-            res.json({success: true, message: "Deleted successfully"})
-        }
-    })
+    Feature.deleteOne({_id: req.params.id})
+        .then((data) => {
+            res.status(200).json({success: true, message: "Deleted successfully", payload: {data}})
+        })
+        .catch((err) => {
+            res.status(400).json("Request Failed")
+        });
 });
 
 module.exports = router;

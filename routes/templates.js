@@ -10,8 +10,8 @@ router.get('', function (req, res) {
 });
 
 router.post('', function (req, res) {
-    const { Name, ProductPrice, status, marge, sale, salePrice, SellingPoints } = req.body;
-    let template = new Template({
+    const {Name, ProductPrice, status, marge, sale, salePrice, SellingPoints} = req.body;
+    const template = new Template({
         Name,
         ProductPrice,
         status,
@@ -22,7 +22,7 @@ router.post('', function (req, res) {
     });
     template.save()
         .then((data) => res.status(200).json({ok: true, message: "Template saved successfully"})
-        .catch((err) => res.status(400).json("Request Failed")));
+            .catch((err) => res.status(400).json("Request Failed")));
 });
 
 router.get('/:id', (req, res) => {
@@ -31,16 +31,24 @@ router.get('/:id', (req, res) => {
         .catch((err) => res.status(400).json(err))
 });
 
-router.delete('/:id',(req, res) => {
+router.delete('/:id', (req, res) => {
     Template.deleteOne({_id: req.params.id})
-        .then((data) => {res.status(200).json({success: true, message: "Deleted successfully", payload: {data}})})
-        .catch((err) => {res.status(400).json("Request Failed")});
+        .then((data) => {
+            res.status(200).json({success: true, message: "Deleted successfully", payload: {data}})
+        })
+        .catch((err) => {
+            res.status(400).json("Request Failed")
+        });
 });
 
 router.post('/search', function (req, res) {
-    Template.find({Name: { $regex: req.body.search, $options: 'i'}})
-        .then((data) => {res.status(200).json({found: data})})
-        .catch((err) => {res.status(400).json("Request Failed")})
+    Template.find({Name: {$regex: req.body.search, $options: 'i'}})
+        .then((data) => {
+            res.status(200).json({found: data})
+        })
+        .catch((err) => {
+            res.status(400).json("Request Failed")
+        })
 });
 
 module.exports = router;
