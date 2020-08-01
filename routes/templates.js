@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-let Template = require('../models/template.js');
+let Template = require('../models/template');
 
 router.get('', function (req, res) {
     Template.find()

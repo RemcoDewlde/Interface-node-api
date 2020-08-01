@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-let PriceCard = require('../models/Pricecard.js');
+let PriceCard = require('../models/Pricecard');
 
 router.get('', function (req, res) {
     PriceCard.find()
